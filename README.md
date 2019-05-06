@@ -2,7 +2,7 @@
 
 ## Usage
 
-```
+```javascript
 const parsecClient = require('parsec-client')
 
 parsecClient.start({
