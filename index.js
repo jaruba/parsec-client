@@ -9,9 +9,9 @@ const appDataDir = process.env.APPDATA || (process.platform == 'darwin' ? proces
 
 function serverGet() {
 	return new Promise((resolve, reject) => {
-		needle.get('https://parsecgaming.com/v1/server-list?include_managed=true', { headers: { 'X-Parsec-Session-Id': session } }, (err, resp, body) => {
-			if (!err && body) {
-				resolve(body)
+		needle.get('https://kessel-api.parsecgaming.com/hosts', { headers: { 'Authorization': 'Bearer ' + session } }, (err, resp, body) => {
+			if (!err && (body || {}).data) {
+				resolve(body.data)
 			} else {
 				console.log(err)
 				console.log(resp.headers)
@@ -82,26 +82,26 @@ function command(args) {
 
 function connectServer(serverHost) {
     console.log('Fetching Servers')
-    serverGet().then(servers => {
-	    let server
+    serverGet().then(hosts => {
+	    let host
 
-		if (!(servers || []).length) {
+		if (!(hosts || []).length) {
 			console.error('Parsec server list is empty')
 			return
 		}
 
 	    // select server by predefined id
-	    servers.some(srv => {
-	    	if (srv.hostname == serverHost) {
-	    		server = srv
+	    hosts.some(srv => {
+	    	if (srv.name == serverHost) {
+	    		host = srv
 	    		return true
 	    	}
 	    })
 
-	    if (!server) {
+	    if (!host) {
 	    	console.error('Server could not be found')
 	    	console.log('Server options are:')
-	    	console.log(servers)
+	    	console.log(hosts)
 	    	return
 	    }
 
@@ -109,8 +109,8 @@ function connectServer(serverHost) {
 	    const appClient = {
 			'session_id': session,
 			'x-function': 'app_client',
-			'server_build': server['version'] + '',
-			'server_id': server['id'] + ''
+//			'server_build': host['build'] + '',
+			'peer_id': host['peer_id'] + ''
 		}
 
 	    console.log('CMD.app_client')
