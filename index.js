@@ -121,6 +121,14 @@ function connectServer(serverHost) {
 
 }
 
+const headers = {
+	'content-type': 'application/json',
+	origin: 'https://ui.parsecgaming.com',
+	referer: 'https://ui.parsecgaming.com/login',
+	'sec-fetch-mode': 'cors',
+	'user-agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_13_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/77.0.3865.90 Safari/537.36'
+}
+
 let session
 
 const sessionExpire = 172800000
@@ -154,7 +162,7 @@ module.exports = {
 		const sessionFile = path.join(appDataDir, 'parsec_session.private')
 
 		function getSession() {
-		    needle.post('https://parsecgaming.com/v1/auth', { email: opts.email, password: opts.password, expiration_type: 'long' }, (err, resp, body) => {
+		    needle.post('https://api.parsecgaming.com/v1/auth', { email: opts.email, password: opts.password, expiration_type: 'long' }, { json: true, headers }, (err, resp, body) => {
 		    	if (!err && body && body.session_id) {
 		    		console.log('loggin data:')
 		    		console.log(body)
